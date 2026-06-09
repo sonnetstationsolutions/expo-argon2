@@ -23,19 +23,15 @@ config.resolver.nodeModulesPaths = [
   path.resolve(moduleRoot, 'node_modules'),
 ];
 
-// Resolve the in-repo parent package to its built entry by absolute file path.
-// extraNodeModules + package.json "main" resolution proved unreliable under the
-// release Gradle bundle (worked via the dev server, failed in release — Metro's
-// package-exports path with no "exports" field). Returning the exact file is
-// deterministic; the Android CI job builds build/ before bundling.
-const MODULE_NAME = '@sonnetstationsolutions/expo-argon2';
-const MODULE_ENTRY = path.resolve(moduleRoot, 'build', 'index.js');
-const defaultResolveRequest = config.resolver.resolveRequest;
-config.resolver.resolveRequest = (context, moduleName, platform) => {
-  if (moduleName === MODULE_NAME) {
-    return { type: 'sourceFile', filePath: MODULE_ENTRY };
-  }
-  return (defaultResolveRequest ?? context.resolveRequest)(context, moduleName, platform);
+// Local-dev fallback only: lets `expo start` (dev server) resolve the package
+// from the repo root. extraNodeModules is consulted only when normal
+// node_modules lookup fails. In CI the built JS is staged into
+// example/node_modules (see ci.yml), which takes precedence and — being under
+// the Metro projectRoot — is watched; the parent-dir path is NOT watched under
+// the release bundler (`expo export:embed`), which fails with "could not be
+// found" / "Failed to get the SHA-1".
+config.resolver.extraNodeModules = {
+  '@sonnetstationsolutions/expo-argon2': moduleRoot,
 };
 
 config.watchFolders = [moduleRoot];

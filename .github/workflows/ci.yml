@@ -61,6 +61,21 @@ jobs:
       - name: Install example deps
         working-directory: example
         run: npm ci
+      # Stage the built JS into the example's node_modules so the release Metro
+      # bundle (expo export:embed) resolves it from under the projectRoot, where
+      # it is watched. A metro extraNodeModules path to the repo root works for
+      # the dev server but not for export:embed (the parent build/ is outside
+      # example/ and never enters the file map -> "Failed to get the SHA-1").
+      # JS only: android/, ios/ and expo-module.config.json are omitted so
+      # autolinking does NOT find a duplicate module here — native is still
+      # linked from the repo root via the example's nativeModulesDir "..".
+      - name: Stage module JS into example node_modules
+        run: |
+          DEST="example/node_modules/@sonnetstationsolutions/expo-argon2"
+          mkdir -p "$DEST"
+          cp -R build "$DEST/build"
+          cp package.json "$DEST/package.json"
+          test -f "$DEST/build/index.js" || { echo "::error::staged module entry missing"; exit 1; }
       - name: Prebuild Android project
         working-directory: example
         run: npx expo prebuild -p android --no-install
