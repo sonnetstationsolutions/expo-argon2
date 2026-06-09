@@ -49,6 +49,13 @@ jobs:
           java-version: 17
       - name: Install module deps
         run: npm ci
+      # The example resolves '@sonnetstationsolutions/expo-argon2' to the repo
+      # root (metro extraNodeModules), whose package.json main is build/index.js.
+      # The release bundle (createBundleReleaseJsAndAssets) runs Metro, so build/
+      # must exist or module resolution fails. Debug never bundles, so only the
+      # release path needs this.
+      - name: Build module
+        run: npm run build
       - name: Install example deps
         working-directory: example
         run: npm ci
