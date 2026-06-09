@@ -55,6 +55,22 @@ jobs:
       - name: Prebuild Android project
         working-directory: example
         run: npx expo prebuild -p android --no-install
+      # RN pins an exact NDK version and AGP auto-installs it during config, but
+      # that install fails on CI when SDK licenses aren't accepted (the
+      # InstallFailedException). Accepting licenses is the real, version-agnostic
+      # fix; the explicit pre-install is best-effort (the version default isn't
+      # always in a greppable file) — don't hardcode, the floor rises with RN.
+      - name: Accept SDK licenses and pre-install NDK
+        working-directory: example
+        run: |
+          yes | sdkmanager --licenses >/dev/null || true
+          NDK_VERSION=$(grep -RhoP --include='*.properties' --include='*.gradle' 'ndkVersion\s*[=:]?\s*"?\K[0-9][0-9.]+' node_modules/react-native 2>/dev/null | head -1 || true)
+          if [ -n "$NDK_VERSION" ]; then
+            echo "Pre-installing NDK $NDK_VERSION"
+            sdkmanager "ndk;$NDK_VERSION" || true
+          else
+            echo "ndkVersion not found in a text file; relying on Gradle auto-install (licenses now accepted)"
+          fi
       - name: Assemble debug APK
         working-directory: example/android
         run: ./gradlew :app:assembleDebug --no-daemon
