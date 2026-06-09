@@ -55,6 +55,19 @@ jobs:
       - name: Prebuild Android project
         working-directory: example
         run: npx expo prebuild -p android --no-install
+      # The prebuilt project pins an exact NDK version (set by the Expo/RN
+      # template); it isn't always pre-installed on the runner and Gradle's
+      # auto-install fails without accepted licenses. Read the pinned version
+      # from the project and install it — don't hardcode, the floor rises with
+      # RN/Expo bumps (same lesson as the iOS Xcode selection).
+      - name: Install required Android NDK
+        working-directory: example/android
+        run: |
+          NDK_VERSION=$(grep -RhoP 'ndkVersion\s*=?\s*"\K[^"]+' . | head -1)
+          if [ -z "$NDK_VERSION" ]; then echo "::error::could not determine ndkVersion from prebuilt project"; exit 1; fi
+          echo "Project requests NDK $NDK_VERSION"
+          yes | sdkmanager --licenses >/dev/null
+          sdkmanager "ndk;$NDK_VERSION"
       - name: Assemble debug APK
         working-directory: example/android
         run: ./gradlew :app:assembleDebug --no-daemon
