@@ -55,7 +55,9 @@ jobs:
       # must exist or module resolution fails. Debug never bundles, so only the
       # release path needs this.
       - name: Build module
-        run: npm run build
+        run: |
+          npm run build
+          test -f build/index.js || { echo "::error::build/index.js missing after npm run build"; exit 1; }
       - name: Install example deps
         working-directory: example
         run: npm ci
