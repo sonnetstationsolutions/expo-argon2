@@ -86,13 +86,20 @@ jobs:
 
   ios:
     name: iOS build (Swift / Argon2Swift)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+      # React Native's Podfile enforces a minimum Xcode (>= 16.1). Runner image
+      # defaults drift and have selected older Xcode (15.4) before, failing
+      # `pod install`; pin to the newest installed Xcode 16 explicitly.
+      - name: Select Xcode 16
+        run: |
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_16*.app | sort -V | tail -1)"
+          xcodebuild -version
       - name: Install module deps
         run: npm ci
       - name: Install example deps
