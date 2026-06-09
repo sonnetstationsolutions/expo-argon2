@@ -49,9 +49,33 @@ jobs:
           java-version: 17
       - name: Install module deps
         run: npm ci
+      # The example resolves '@sonnetstationsolutions/expo-argon2' to the repo
+      # root (metro extraNodeModules), whose package.json main is build/index.js.
+      # The release bundle (createBundleReleaseJsAndAssets) runs Metro, so build/
+      # must exist or module resolution fails. Debug never bundles, so only the
+      # release path needs this.
+      - name: Build module
+        run: |
+          npm run build
+          test -f build/index.js || { echo "::error::build/index.js missing after npm run build"; exit 1; }
       - name: Install example deps
         working-directory: example
         run: npm ci
+      # Stage the built JS into the example's node_modules so the release Metro
+      # bundle (expo export:embed) resolves it from under the projectRoot, where
+      # it is watched. A metro extraNodeModules path to the repo root works for
+      # the dev server but not for export:embed (the parent build/ is outside
+      # example/ and never enters the file map -> "Failed to get the SHA-1").
+      # JS only: android/, ios/ and expo-module.config.json are omitted so
+      # autolinking does NOT find a duplicate module here — native is still
+      # linked from the repo root via the example's nativeModulesDir "..".
+      - name: Stage module JS into example node_modules
+        run: |
+          DEST="example/node_modules/@sonnetstationsolutions/expo-argon2"
+          mkdir -p "$DEST"
+          cp -R build "$DEST/build"
+          cp package.json "$DEST/package.json"
+          test -f "$DEST/build/index.js" || { echo "::error::staged module entry missing"; exit 1; }
       - name: Prebuild Android project
         working-directory: example
         run: npx expo prebuild -p android --no-install
@@ -71,9 +95,13 @@ jobs:
           else
             echo "ndkVersion not found in a text file; relying on Gradle auto-install (licenses now accepted)"
           fi
-      - name: Assemble debug APK
+      # Build the release variant: unlike debug, it embeds the JS bundle
+      # (Hermes), so the APK runs standalone on a device with no Metro dev
+      # server — required for the on-device frozen-vector check. The Expo
+      # template signs release with the debug keystore, so it installs as-is.
+      - name: Assemble release APK
         working-directory: example/android
-        run: ./gradlew :app:assembleDebug --no-daemon
+        run: ./gradlew :app:assembleRelease --no-daemon
       # Argon2's native .so (via argon2kt) must be 16 KB-page aligned for
       # Android 15 / 64-bit devices. argon2kt >= 1.6.0 ships aligned binaries;
       # this gate fails the build if a future change reintroduces 4 KB alignment.
@@ -81,7 +109,7 @@ jobs:
         working-directory: example/android
         run: |
           set -euo pipefail
-          APK=$(find app/build/outputs/apk/debug -name '*.apk' | head -1)
+          APK=$(find app/build/outputs/apk/release -name '*.apk' | head -1)
           echo "Checking ELF alignment in: $APK"
           TMP=$(mktemp -d)
           unzip -o -q "$APK" 'lib/*' -d "$TMP"
@@ -99,6 +127,14 @@ jobs:
           if [ "$found" -eq 0 ]; then echo "::error::no 64-bit native libs found in APK"; exit 1; fi
           if [ "$fail" -ne 0 ]; then echo "16 KB alignment check FAILED"; exit 1; fi
           echo "All 64-bit native libs are >= 16 KB aligned."
+      # Make the release APK downloadable so the on-device frozen-vector check
+      # can be run by sideloading onto a physical Android device.
+      - name: Upload release APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: example-release-apk
+          path: example/android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: error
 
   ios:
     name: iOS build (Swift / Argon2Swift)
