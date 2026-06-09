@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@sonnetstationsolutions/expo-argon2": ["../src/index"],
+      "@sonnetstationsolutions/expo-argon2/*": ["../src/*"]
+    }
+  }
+}

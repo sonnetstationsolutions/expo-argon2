@@ -1,0 +1,70 @@
+{
+  "name": "@sonnetstationsolutions/expo-argon2",
+  "version": "0.1.0",
+  "description": "Native Argon2id (and Argon2i/Argon2d) for Expo and React Native: off-thread key derivation, raw bytes in and out, New Architecture compatible.",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "node internal/module_scripts/build.js",
+    "clean": "node internal/module_scripts/clean.js",
+    "lint": "eslint src/",
+    "test": "node internal/module_scripts/test.js",
+    "vectors:generate": "node scripts/generate-vectors.mjs",
+    "vectors:check": "node scripts/generate-vectors.mjs --check",
+    "prepare": "node internal/module_scripts/prepare.js",
+    "open:ios": "node internal/module_scripts/open-ios.js",
+    "open:android": "node internal/module_scripts/open-android.js"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "expo-argon2",
+    "argon2",
+    "argon2id",
+    "argon2i",
+    "argon2d",
+    "kdf",
+    "key-derivation",
+    "password-hashing",
+    "crypto",
+    "hash",
+    "native-module",
+    "turbomodule",
+    "new-architecture"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SonnetStationSolutions/expo-argon2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SonnetStationSolutions/expo-argon2/issues"
+  },
+  "author": "Sonnet Station Solutions, LLC (https://github.com/SonnetStationSolutions)",
+  "license": "MIT",
+  "homepage": "https://github.com/SonnetStationSolutions/expo-argon2#readme",
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@noble/hashes": "^2.0.0",
+    "@types/jest": "^29.2.1",
+    "@types/react": "~19.1.1",
+    "babel-preset-expo": "~55.0.8",
+    "eslint": "~9.39.4",
+    "eslint-config-universe": "^15.0.3",
+    "expo": "^56.0.9",
+    "hash-wasm": "^4.12.0",
+    "jest": "^29.7.0",
+    "jest-expo": "~55.0.9",
+    "prettier": "^3.0.0",
+    "react-native": "0.82.1",
+    "typescript": "^5.9.2"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

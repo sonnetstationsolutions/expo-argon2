@@ -1,0 +1,118 @@
+name: CI
+
+# Fork-PR-safe: no job in this workflow references any secret, so it is safe to
+# run on pull requests from forks. Publishing (which needs a token) lives in
+# release.yml and is gated to tag pushes only.
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  js:
+    name: Lint, typecheck, vectors, build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit -p tsconfig.json
+      - run: npm test
+      # Cross-checks the frozen vector + matrix against @noble/hashes and
+      # hash-wasm in Node, so any drift in the contract fails the build.
+      - run: npm run vectors:check
+      - run: npm run build
+
+  android:
+    name: Android build (Kotlin / argon2kt)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Install module deps
+        run: npm ci
+      - name: Install example deps
+        working-directory: example
+        run: npm ci
+      - name: Prebuild Android project
+        working-directory: example
+        run: npx expo prebuild -p android --no-install
+      - name: Assemble debug APK
+        working-directory: example/android
+        run: ./gradlew :app:assembleDebug --no-daemon
+      # Argon2's native .so (via argon2kt) must be 16 KB-page aligned for
+      # Android 15 / 64-bit devices. argon2kt >= 1.6.0 ships aligned binaries;
+      # this gate fails the build if a future change reintroduces 4 KB alignment.
+      - name: Verify 64-bit native libs are 16 KB-aligned
+        working-directory: example/android
+        run: |
+          set -euo pipefail
+          APK=$(find app/build/outputs/apk/debug -name '*.apk' | head -1)
+          echo "Checking ELF alignment in: $APK"
+          TMP=$(mktemp -d)
+          unzip -o -q "$APK" 'lib/*' -d "$TMP"
+          fail=0
+          found=0
+          while IFS= read -r so; do
+            found=1
+            while IFS= read -r align; do
+              if [ "$((align))" -lt 16384 ]; then
+                echo "::error::$so has a LOAD segment aligned to $align (< 16 KB)"
+                fail=1
+              fi
+            done < <(readelf -lW "$so" | awk '$1=="LOAD"{print $NF}')
+          done < <(find "$TMP/lib/arm64-v8a" "$TMP/lib/x86_64" -name '*.so' 2>/dev/null)
+          if [ "$found" -eq 0 ]; then echo "::error::no 64-bit native libs found in APK"; exit 1; fi
+          if [ "$fail" -ne 0 ]; then echo "16 KB alignment check FAILED"; exit 1; fi
+          echo "All 64-bit native libs are >= 16 KB aligned."
+
+  ios:
+    name: iOS build (Swift / Argon2Swift)
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install module deps
+        run: npm ci
+      - name: Install example deps
+        working-directory: example
+        run: npm ci
+      - name: Prebuild iOS project
+        working-directory: example
+        run: npx expo prebuild -p ios --no-install
+      - name: Pod install
+        working-directory: example/ios
+        run: pod install
+      - name: Build for simulator
+        working-directory: example/ios
+        run: |
+          WS=$(ls -d *.xcworkspace | head -1)
+          SCHEME="${WS%.xcworkspace}"
+          xcodebuild \
+            -workspace "$WS" \
+            -scheme "$SCHEME" \
+            -sdk iphonesimulator \
+            -configuration Debug \
+            CODE_SIGNING_ALLOWED=NO \
+            build

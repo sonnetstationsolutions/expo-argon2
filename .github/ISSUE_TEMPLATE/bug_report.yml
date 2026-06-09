@@ -1,0 +1,37 @@
+name: Bug report
+description: Something is not working as documented.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. Please do not include secrets, real passwords, or production salts.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Minimal steps or a code snippet. Include the exact Argon2 parameters (memory, iterations, parallelism, hashLength, type, version) if relevant.
+      render: typescript
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: expo-argon2 version, Expo SDK / React Native version, and platform (iOS / Android + OS version).
+      placeholder: "expo-argon2 0.1.0, Expo SDK 56, iOS 18 / Android 14"
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Error output
+      description: Any error message or `code` thrown (e.g. ERR_ARGON2_HASH_FAILED).
+      render: shell
