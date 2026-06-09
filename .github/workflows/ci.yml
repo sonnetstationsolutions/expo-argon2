@@ -86,13 +86,23 @@ jobs:
 
   ios:
     name: iOS build (Swift / Argon2Swift)
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
+      # Toolchain floor rises over time: RN's Podfile needs Xcode >= 16.1, and a
+      # transitive Swift Package now needs swift-tools 6.2 (Xcode 26). Runner
+      # image default Xcode drifts (15.4 once broke pod install). Never cap at a
+      # major version — select the newest non-beta Xcode the image provides.
+      - name: Select newest Xcode
+        run: |
+          ls -d /Applications/Xcode_*.app
+          sudo xcode-select -s "$(ls -d /Applications/Xcode_*.app | grep -vi beta | sort -V | tail -1)"
+          xcodebuild -version
+          swift --version
       - name: Install module deps
         run: npm ci
       - name: Install example deps
