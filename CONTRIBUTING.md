@@ -54,6 +54,10 @@ iOS requires a Mac with Xcode. Android requires the Android SDK and a JDK.
 - Update the README and `CHANGELOG.md` when behavior or the public API changes.
 - Fill out the PR checklist.
 
+## Releasing
+
+Maintainers: the versioning policy (driven by the byte-compatibility rule above) and the step-by-step release process live in [RELEASING.md](RELEASING.md).
+
 ## Reporting bugs and security issues
 
 Functional bugs go in [GitHub issues](https://github.com/SonnetStationSolutions/expo-argon2/issues). **Security vulnerabilities must not** be filed as public issues — see [SECURITY.md](SECURITY.md).
