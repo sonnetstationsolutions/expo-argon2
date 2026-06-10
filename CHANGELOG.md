@@ -17,5 +17,10 @@ Initial release.
 - Typed `Argon2Error` with stable `code`s.
 - Example app with an on-device frozen-vector check.
 
+## [0.1.1] - 2026-06-08
+
+- First NPM CI release to validate CI and trusted publishing
+
 [Unreleased]: https://github.com/SonnetStationSolutions/expo-argon2/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/SonnetStationSolutions/expo-argon2/releases/tag/v0.1.0
+[0.1.1]: https://github.com/SonnetStationSolutions/expo-argon2/releases/tag/v0.1.1
