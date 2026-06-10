@@ -1,8 +1,11 @@
 name: Release
 
-# Publishes to npm when a version tag is pushed (e.g. v0.1.0). Tag pushes can
-# only be made by maintainers with write access, never by fork pull requests,
-# so the NPM_TOKEN secret is never exposed to untrusted code.
+# Publishes to npm when a version tag is pushed (e.g. v0.1.0) via npm trusted
+# publishing (OIDC) — no NPM_TOKEN secret. Tag pushes can only be made by
+# maintainers with write access, never by fork pull requests. Requires a
+# one-time trusted-publisher config on npmjs.com and an existing package (OIDC
+# cannot create a package; the first publish is manual). See
+# .claude/GITHUB_SETUP.md.
 on:
   push:
     tags:
@@ -10,7 +13,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # npm provenance
+  id-token: write # OIDC token for npm trusted publishing + provenance
 
 jobs:
   publish:
@@ -20,9 +23,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
           registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing needs npm >= 11.5.1, newer than the npm bundled with
+      # Node — upgrade before publishing.
+      - run: npm install -g npm@latest
       - run: npm ci
       - run: npm run lint
       - run: npx tsc --noEmit -p tsconfig.json
@@ -35,7 +41,7 @@ jobs:
           if [ "$PKG_VERSION" != "${GITHUB_REF_NAME}" ]; then
             echo "Tag ${GITHUB_REF_NAME} does not match package.json ($PKG_VERSION)"; exit 1
           fi
+      # No token: npm exchanges the GitHub OIDC token with the registry. Keep
+      # --provenance explicit (don't rely on it being implied).
       - name: Publish
         run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
