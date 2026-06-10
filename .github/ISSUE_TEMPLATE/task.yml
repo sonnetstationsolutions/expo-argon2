@@ -1,0 +1,23 @@
+name: Task / chore
+description: A maintenance task, validation step, or housekeeping item (not a bug or a feature request).
+labels: [task]
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What needs to be done, and why?
+    validations:
+      required: true
+  - type: textarea
+    id: done-when
+    attributes:
+      label: Done when
+      description: Acceptance criteria — how we know this is complete.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Context / links
+      description: Background, related issues, docs, or commits.
