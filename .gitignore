@@ -56,6 +56,9 @@ yarn-error.log
 # Expo
 .expo/*
 
+# npm pack output (build artifact for local consumption / pre-publish testing)
+*.tgz
+
 # Local env / secrets (never commit — public repo)
 .env
 .env.*
