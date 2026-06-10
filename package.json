@@ -4,6 +4,16 @@
   "description": "Native Argon2id (and Argon2i/Argon2d) for Expo and React Native: off-thread key derivation, raw bytes in and out, New Architecture compatible.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
+  "files": [
+    "build",
+    "src",
+    "!src/__tests__",
+    "android",
+    "ios",
+    "expo-module.config.json",
+    "THIRD_PARTY_NOTICES.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "build": "node internal/module_scripts/build.js",
     "clean": "node internal/module_scripts/clean.js",
