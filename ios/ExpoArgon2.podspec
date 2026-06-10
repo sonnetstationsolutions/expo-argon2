@@ -4,13 +4,13 @@ Pod::Spec.new do |s|
   s.summary        = 'Native Argon2id for Expo and React Native.'
   s.description    = 'Off-thread Argon2id/Argon2i/Argon2d key derivation for Expo, returning raw bytes. New Architecture compatible.'
   s.author         = 'Sonnet Station Solutions, LLC'
-  s.homepage       = 'https://github.com/SonnetStationSolutions/expo-argon2'
+  s.homepage       = 'https://github.com/sonnetstationsolutions/expo-argon2'
   s.license        = { :type => 'MIT', :file => '../LICENSE' }
   s.platforms      = {
     :ios => '16.4',
     :tvos => '16.4'
   }
-  s.source         = { git: 'https://github.com/SonnetStationSolutions/expo-argon2.git', tag: "v#{s.version}" }
+  s.source         = { git: 'https://github.com/sonnetstationsolutions/expo-argon2.git', tag: "v#{s.version}" }
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'

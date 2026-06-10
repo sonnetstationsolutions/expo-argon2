@@ -5,7 +5,7 @@
 Please report security vulnerabilities **privately**, not as a public issue or pull request.
 
 Use GitHub's private vulnerability reporting:
-**[Report a vulnerability](https://github.com/SonnetStationSolutions/expo-argon2/security/advisories/new)** (Security tab → Report a vulnerability).
+**[Report a vulnerability](https://github.com/sonnetstationsolutions/expo-argon2/security/advisories/new)** (Security tab → Report a vulnerability).
 
 Please include enough detail to reproduce: affected version, platform, parameters, and the observed vs. expected behavior. We will acknowledge the report and work with you on a fix and coordinated disclosure.
 

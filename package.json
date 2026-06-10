@@ -44,14 +44,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SonnetStationSolutions/expo-argon2.git"
+    "url": "git+https://github.com/sonnetstationsolutions/expo-argon2.git"
   },
   "bugs": {
-    "url": "https://github.com/SonnetStationSolutions/expo-argon2/issues"
+    "url": "https://github.com/sonnetstationsolutions/expo-argon2/issues"
   },
-  "author": "Sonnet Station Solutions, LLC (https://github.com/SonnetStationSolutions)",
+  "author": "Sonnet Station Solutions, LLC (https://github.com/sonnetstationsolutions)",
   "license": "MIT",
-  "homepage": "https://github.com/SonnetStationSolutions/expo-argon2#readme",
+  "homepage": "https://github.com/sonnetstationsolutions/expo-argon2#readme",
   "publishConfig": {
     "access": "public"
   },

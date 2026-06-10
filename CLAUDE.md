@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A public, open-source Expo native module exposing Argon2id/Argon2i/Argon2d to React Native, off the JS thread, returning raw `Uint8Array` keys. Its reason to exist is **byte-for-byte agreement** with the reference Argon2 (and `hash-wasm` / `@noble/hashes`). Repo lives under the `SonnetStationSolutions` GitHub org; published to npm as `@sonnetstationsolutions/expo-argon2`.
+A public, open-source Expo native module exposing Argon2id/Argon2i/Argon2d to React Native, off the JS thread, returning raw `Uint8Array` keys. Its reason to exist is **byte-for-byte agreement** with the reference Argon2 (and `hash-wasm` / `@noble/hashes`). Repo lives under the `sonnetstationsolutions` GitHub org; published to npm as `@sonnetstationsolutions/expo-argon2`.
 
 ## Stack
 
