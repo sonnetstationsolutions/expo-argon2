@@ -22,7 +22,7 @@ This Code of Conduct applies within all community spaces, and also applies when 
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported privately to the project maintainers through GitHub's [private vulnerability reporting](https://github.com/SonnetStationSolutions/expo-argon2/security/advisories/new) channel. All complaints will be reviewed and investigated promptly and fairly.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported privately to the project maintainers through GitHub's [private vulnerability reporting](https://github.com/sonnetstationsolutions/expo-argon2/security/advisories/new) channel. All complaints will be reviewed and investigated promptly and fairly.
 
 Community leaders are obligated to respect the privacy and security of the reporter of any incident.
 
