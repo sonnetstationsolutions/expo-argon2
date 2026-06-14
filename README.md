@@ -1,5 +1,9 @@
 # expo-argon2
 
+[![CI](https://img.shields.io/github/actions/workflow/status/sonnetstationsolutions/expo-argon2/ci.yml?branch=main&label=CI)](https://github.com/sonnetstationsolutions/expo-argon2/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@sonnetstationsolutions/expo-argon2)](https://www.npmjs.com/package/@sonnetstationsolutions/expo-argon2)
+[![license](https://img.shields.io/github/license/sonnetstationsolutions/expo-argon2)](LICENSE)
+
 Native **Argon2id** (and Argon2i / Argon2d) for Expo and React Native.
 
 - Runs **off the JS thread** — the memory-hard hash never blocks the UI.
